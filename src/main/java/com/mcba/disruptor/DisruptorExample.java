@@ -35,7 +35,7 @@ public class DisruptorExample {
 				System.out.println("ValueEvent: " + event.getValue());
 			}
 		};
-
+ 
 
 		final EventHandler<ValueEvent> INOUT = new EventHandler<ValueEvent>() {
 			// event will eventually be recycled by the Disruptor after it wraps
