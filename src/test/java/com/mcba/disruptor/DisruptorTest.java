@@ -30,7 +30,6 @@ public class DisruptorTest {
 		@Override
 		public void onEvent(final ValueEvent event, final long sequence, final boolean endOfBatch) throws Exception {
 			System.out.println("Input2: " + event.getValue());
-			System.out.println("ValueEvent: " + event.getValue());
 		}
 	};
 
@@ -59,7 +58,7 @@ public class DisruptorTest {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Test
+	//@Test
 	public void diamondTest() {
 		ExecutorService threadPool = Executors.newFixedThreadPool(4);
 		Disruptor<ValueEvent> disruptor = new Disruptor<ValueEvent>(ValueEvent.EVENT_FACTORY, 2, threadPool);
@@ -80,7 +79,7 @@ public class DisruptorTest {
 		threadPool.shutdown();
 	}
 
-	@Test
+	//@Test
 	public void parallelTest() {
 		ExecutorService threadPool = Executors.newFixedThreadPool(4);
 		Disruptor<ValueEvent> disruptor = new Disruptor<ValueEvent>(ValueEvent.EVENT_FACTORY, 2, threadPool);
