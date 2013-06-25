@@ -137,6 +137,5 @@ public class DisruptorTest {
 		disruptor.shutdown();
 		threadPool.shutdown();
 	}
-
 }
 
