@@ -17,7 +17,7 @@ import com.lmax.disruptor.WorkerPool;
 import com.lmax.disruptor.dsl.Disruptor;
 
 
-public class DisruptorTest {
+public class QueueTest {
 
 	final EventHandler<ValueEvent> INPUT1 = new EventHandler<ValueEvent>() {
 		@Override
