@@ -16,7 +16,7 @@ public final class MyHandler implements EventHandler<ValueEvent>
 		this.numberOfConsumers = numberOfConsumers;
 	}
 
-	@Override
+
 	public void onEvent(final ValueEvent entry, final long sequence, final boolean onEndOfBatch)
 	{
 		//if ((sequence % numberOfConsumers) == ordinal)

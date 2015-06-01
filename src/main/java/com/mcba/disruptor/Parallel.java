@@ -17,7 +17,6 @@ public class Parallel {
 		//this is a comment
 		final EventHandler<ValueEvent> IN = new EventHandler<ValueEvent>() {
 			// event will eventually be recycled by the Disruptor after it wraps
-			@Override
 			public void onEvent(final ValueEvent event, final long sequence, final boolean endOfBatch) throws Exception {
 				System.out.println("IN: " + sequence);
 				System.out.println("ValueEvent: " + event.getValue());
@@ -26,7 +25,6 @@ public class Parallel {
 
 		final EventHandler<ValueEvent> OUT = new EventHandler<ValueEvent>() {
 			// event will eventually be recycled by the Disruptor after it wraps
-			@Override
 			public void onEvent(final ValueEvent event, final long sequence, final boolean endOfBatch) throws Exception {
 				System.out.println("OUT: " + sequence);
 				System.out.println("ValueEvent: " + event.getValue());
@@ -36,7 +34,6 @@ public class Parallel {
 
 		final EventHandler<ValueEvent> INOUT = new EventHandler<ValueEvent>() {
 			// event will eventually be recycled by the Disruptor after it wraps
-			@Override
 			public void onEvent(final ValueEvent event, final long sequence, final boolean endOfBatch) throws Exception {
 				System.out.println("INOUT: " + sequence);
 				System.out.println("ValueEvent: " + event.getValue());
