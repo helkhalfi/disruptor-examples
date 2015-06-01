@@ -3,11 +3,9 @@ import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.EventTranslatorOneArg;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
-import com.mcba.disruptor.ValueEvent;
 import org.junit.Test;
 
 import java.nio.ByteBuffer;
-import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -16,14 +14,13 @@ import java.util.concurrent.Executors;
  */
 public class DisruptorTests {
 
-    public static class LongEvent
+    public class CarEvent
     {
-        private long value;
 
-        public void set(long value)
-        {
-            this.value = value;
-        }
+        private String color = "";
+        private String name = "";
+        private String
+
     }
 
 
@@ -133,7 +130,7 @@ public class DisruptorTests {
             Thread.sleep(1000);
         }
     }
-
+/*
     @Test
     public void oneProducerMultipleConsumersSameEvent() {
         Disruptor disruptor = new Disruptor(ValueEvent.EVENT_FACTORY, RING_BUFFER_SIZE, threadPool);
@@ -141,8 +138,8 @@ public class DisruptorTests {
         generateEvent(ringBuffer);
         disruptor.shutdown();
         threadPool.shutdown();
-
-
+        String dodo = "dodo";
+        dodo.
 
 
         private void generateEvent(RingBuffer ringBuffer) {
@@ -168,4 +165,6 @@ public class DisruptorTests {
     public void diamondPattern() {
 
     }
+
+    */
 }

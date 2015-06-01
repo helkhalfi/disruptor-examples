@@ -22,7 +22,6 @@
 			<artifactId>disruptor</artifactId>
 			<version>${disruptor.version}</version>
 		</dependency>
-
 	</dependencies>
 </project>
 
