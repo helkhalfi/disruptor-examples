@@ -1,8 +1,8 @@
 package com.mcba.disruptor;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.lmax.disruptor.EventHandler;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class MyHandler implements EventHandler<ValueEvent>
 {
