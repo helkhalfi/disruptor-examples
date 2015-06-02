@@ -5,9 +5,12 @@ import com.lmax.disruptor.EventHandler;
 /**
  * Created by Hichame EL KHALFI on 01/06/2015.
  */
-public class CarEventPrintColorHandler implements EventHandler<CarEvent> {
+public class CarEventPrintCarHandler implements EventHandler<CarEvent> {
+
 
     public void onEvent(CarEvent event, long sequence, boolean endOfBatch) throws Exception {
-        System.out.println("Color:[" + event.get().getColor() + "]");
+
+        System.out.println(event.get());
+
     }
 }

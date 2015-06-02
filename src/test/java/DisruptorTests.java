@@ -1,13 +1,10 @@
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
-import com.mcba.disruptor.CarEvent;
-import com.mcba.disruptor.CarEventPrintColorHandler;
-import com.mcba.disruptor.CarEventProducer;
+import com.mcba.disruptor.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,11 +14,16 @@ import java.util.concurrent.Executors;
 public class DisruptorTests {
 
     private ExecutorService executorService;
+    private Disruptor<CarEvent> disruptor;
 
     @Before
     public void init() {
         // Executor that will be used to construct new threads for consumers
         executorService = Executors.newFixedThreadPool(3);
+
+        // Construct the Disruptor
+        int bufferSize = 1024;// Specify the size of the ring buffer, must be power of 2.
+        disruptor = new Disruptor<>(CarEvent::new, bufferSize, executorService);
     }
 
     @After
@@ -29,25 +31,20 @@ public class DisruptorTests {
         if (executorService != null) {
             executorService.shutdown();
         }
+
+        if (disruptor != null) {
+            disruptor.shutdown();
+        }
     }
 
     @Test
-    public void toto1() throws Exception
+    public void oneProducerMultipleConsumersInSerieSameEvent() throws Exception
     {
-        // Specify the size of the ring buffer, must be power of 2.
-        int bufferSize = 1024;
 
-        // Construct the Disruptor
-        Disruptor<CarEvent> disruptor = new Disruptor<>(CarEvent::new, bufferSize, executorService);
-        //Disruptor<CarEvent> disruptor = new Disruptor(new CarEventFactory(), bufferSize, executorService);
 
-        // Connect the handlers
-
-        disruptor.handleEventsWith(new CarEventPrintColorHandler(),
-                (carEvent, sequence1, endOfBatch) ->
-                        System.out.println("Power:[" + carEvent.get().getPower() + "]")
-
-        );
+        disruptor.handleEventsWith(new CarEventSetColorHandler())
+                .then(new CarEventSetPowerHandler())
+                .then(new CarEventPrintCarHandler());
 
         // Start the Disruptor, starts all threads running
         disruptor.start();
@@ -55,16 +52,23 @@ public class DisruptorTests {
         // Get the ring buffer from the Disruptor to be used for publishing.
         RingBuffer<CarEvent> ringBuffer = disruptor.getRingBuffer();
 
-        CarEventProducer producer = new CarEventProducer(ringBuffer);
+        doWork(ringBuffer);
+    }
 
-        ByteBuffer bb = ByteBuffer.allocate(8);
-        for (long l = 0; true; l++)
-        {
-            bb.putLong(0, l);
-            //producer.onData();
-            //ringBuffer.publishEvent((event, sequence, buffer) -> event.set(null), bb);
-            Thread.sleep(1000);
-        }
+
+    @Test
+    public void oneProducerMultipleConsumersInParallelSameEvent() throws Exception {
+        // Connect the handlers
+        disruptor.handleEventsWith(new CarEventSetColorHandler(), new CarEventSetPowerHandler(), new CarEventPrintCarHandler());
+
+        // Start the Disruptor, starts all threads running
+        disruptor.start();
+
+        // Get the ring buffer from the Disruptor to be used for publishing.
+        RingBuffer<CarEvent> ringBuffer = disruptor.getRingBuffer();
+
+
+        doWork(ringBuffer);
     }
 /*
     @Test
@@ -103,4 +107,14 @@ public class DisruptorTests {
     }
 
     */
+
+    private void doWork(RingBuffer<CarEvent> ringBuffer) {
+        for (long l = 0; l < 10; l++) {
+            long seq = ringBuffer.next();
+            CarEvent carEvent = ringBuffer.get(seq);
+            carEvent.set(new Car());
+            ringBuffer.publish(seq);
+
+        }
+    }
 }
