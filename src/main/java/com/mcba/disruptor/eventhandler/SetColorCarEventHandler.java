@@ -1,13 +1,15 @@
-package com.mcba.disruptor;
+package com.mcba.disruptor.eventhandler;
 
 import com.lmax.disruptor.EventHandler;
+import com.mcba.disruptor.Car;
+import com.mcba.disruptor.CarEvent;
 
 import java.util.Random;
 
 /**
  * Created by Hichame EL KHALFI on 01/06/2015.
  */
-public class CarEventSetColorHandler implements EventHandler<CarEvent> {
+public class SetColorCarEventHandler implements EventHandler<CarEvent> {
 
     private static final Random random = new Random();
 

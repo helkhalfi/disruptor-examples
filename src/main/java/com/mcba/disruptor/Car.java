@@ -6,10 +6,10 @@ package com.mcba.disruptor;
  */
 
 public class Car {
-
     private COLOR color = COLOR.WHITE;
-    private String name = null;
-    private POWER power = POWER.NONE;
+    private POWER power = POWER.COLD_FUSION;
+    private String transportMethod = "";
+    private String customerNorificationMethod = "";
 
     public COLOR getColor() {
         return color;
@@ -17,14 +17,6 @@ public class Car {
 
     public void setColor(COLOR color) {
         this.color = color;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public POWER getPower() {
@@ -35,17 +27,33 @@ public class Car {
         this.power = power;
     }
 
+    public String getTransportMethod() {
+        return transportMethod;
+    }
+
+    public void setTransportMethod(String transportMethod) {
+        this.transportMethod = transportMethod;
+    }
+
+    public String getCustomerNorificationMethod() {
+        return customerNorificationMethod;
+    }
+
+    public void setCustomerNorificationMethod(String customerNorificationMethod) {
+        this.customerNorificationMethod = customerNorificationMethod;
+    }
+
     @Override
     public String toString() {
-        return "CarEvent{" +
-                "color='" + color + '\'' +
-                ", name='" + name + '\'' +
+        return "Car{" +
+                "color=" + color +
                 ", power=" + power +
+                ", transportMethod='" + transportMethod + '\'' +
+                ", customerNorificationMethod='" + customerNorificationMethod + '\'' +
                 '}';
     }
 
     public enum POWER {
-        NONE,
         ELECTRIC,
         DIESEL,
         GASOLINE,

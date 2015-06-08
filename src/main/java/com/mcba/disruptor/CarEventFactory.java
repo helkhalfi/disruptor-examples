@@ -5,11 +5,11 @@ import com.lmax.disruptor.EventFactory;
 /**
  * Created by Hichame EL KHALFI on 01/06/2015.
  */
-public class CarEventFactory implements EventFactory<Car> {
+public class CarEventFactory implements EventFactory<CarEvent> {
 
-    public Car newInstance() {
+    public CarEvent newInstance() {
 
-        return new Car();
+        return new CarEvent();
     }
 
 

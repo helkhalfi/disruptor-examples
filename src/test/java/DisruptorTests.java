@@ -1,6 +1,14 @@
+import com.lmax.disruptor.IgnoreExceptionHandler;
 import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.WorkerPool;
 import com.lmax.disruptor.dsl.Disruptor;
-import com.mcba.disruptor.*;
+import com.mcba.disruptor.Car;
+import com.mcba.disruptor.CarEvent;
+import com.mcba.disruptor.eventhandler.CustomerNotificationCarEventHandler;
+import com.mcba.disruptor.eventhandler.PrintCarEventHandler;
+import com.mcba.disruptor.eventhandler.SetColorCarEventHandler;
+import com.mcba.disruptor.eventhandler.SetPowerCarEventHandler;
+import com.mcba.disruptor.workhandler.DeliveryCarWorkHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,8 +30,13 @@ public class DisruptorTests {
         executorService = Executors.newFixedThreadPool(3);
 
         // Construct the Disruptor
-        int bufferSize = 1024;// Specify the size of the ring buffer, must be power of 2.
-        disruptor = new Disruptor<>(CarEvent::new, bufferSize, executorService);
+
+        // 1-  Specify the size of the ring buffer, must be power of 2.
+        int bufferSize = 1024;
+
+        //2 - initialize the Disruptor object
+        disruptor = new Disruptor<>(CarEvent::new, bufferSize, executorService);//java 8 flavor
+        //disruptor = new Disruptor<>(new CarEventFactory(), bufferSize, executorService);
     }
 
     @After
@@ -38,13 +51,11 @@ public class DisruptorTests {
     }
 
     @Test
-    public void oneProducerMultipleConsumersInSerieSameEvent() throws Exception
+    public void buildCarStepByStep() throws Exception
     {
-
-
-        disruptor.handleEventsWith(new CarEventSetColorHandler())
-                .then(new CarEventSetPowerHandler())
-                .then(new CarEventPrintCarHandler());
+        disruptor.handleEventsWith(new SetColorCarEventHandler())
+                .then(new SetPowerCarEventHandler())
+                .then(new PrintCarEventHandler());
 
         // Start the Disruptor, starts all threads running
         disruptor.start();
@@ -52,14 +63,15 @@ public class DisruptorTests {
         // Get the ring buffer from the Disruptor to be used for publishing.
         RingBuffer<CarEvent> ringBuffer = disruptor.getRingBuffer();
 
-        doWork(ringBuffer);
+        sendCarsToFactory(ringBuffer);
     }
 
 
     @Test
-    public void oneProducerMultipleConsumersInParallelSameEvent() throws Exception {
+    public void sendCarByAAllDeliveryType() throws Exception {
         // Connect the handlers
-        disruptor.handleEventsWith(new CarEventSetColorHandler(), new CarEventSetPowerHandler(), new CarEventPrintCarHandler());
+        disruptor.handleEventsWith(new CustomerNotificationCarEventHandler("WebSite"),
+                new CustomerNotificationCarEventHandler("Twitter"));
 
         // Start the Disruptor, starts all threads running
         disruptor.start();
@@ -67,38 +79,45 @@ public class DisruptorTests {
         // Get the ring buffer from the Disruptor to be used for publishing.
         RingBuffer<CarEvent> ringBuffer = disruptor.getRingBuffer();
 
-
-        doWork(ringBuffer);
-    }
-/*
-    @Test
-    public void oneProducerMultipleConsumersSameEvent() {
-        Disruptor disruptor = new Disruptor(ValueEvent.EVENT_FACTORY, RING_BUFFER_SIZE, threadPool);
-        disruptor.handleEventsWith(INPUT1, INPUT2);
-        generateEvent(ringBuffer);
-        disruptor.shutdown();
-        threadPool.shutdown();
-        String dodo = "dodo";
-        dodo.
-
-
-        private void generateEvent(RingBuffer ringBuffer) {
-            for (long i = 0; i <= 10; i++) {
-                String uuid = UUID.randomUUID().toString();
-                // Two phase commit. Grab one of the 1024 slots
-                long seq = ringBuffer.next();
-                ValueEvent valueEvent = ringBuffer.get(seq);
-                valueEvent.setValue(uuid);
-                ringBuffer.publish(seq);
-            }
-        }
+        sendCarsToFactory(ringBuffer);
     }
 
 
     @Test
-    public void oneProducerMultipleConsumersDifferentEvent() {
+    public void sendCarByAOneDeliveryTypeAtOnce() throws Exception {
+        // Connect the handlers
 
+        WorkerPool<CarEvent> physicalDeliveryWorkerPool =
+                new WorkerPool(CarEvent::new,
+                        new IgnoreExceptionHandler(),
+                        new DeliveryCarWorkHandler("Trunk"),
+                        new DeliveryCarWorkHandler("boat"));
+        RingBuffer<CarEvent> ringBuffer = physicalDeliveryWorkerPool.start(executorService);
+
+        sendCarsToFactory(ringBuffer);
     }
+
+
+    @Test
+    public void carFactory() throws Exception {
+
+
+        disruptor.handleEventsWith(new SetColorCarEventHandler())
+                .then(new SetPowerCarEventHandler())
+                /*.thenHandleEventsWithWorkerPool(new DeliveryCarWorkHandler("Trunk"),
+                        new DeliveryCarWorkHandler("Boat"))*/
+                .then(new CustomerNotificationCarEventHandler("WebSite"),
+                        new CustomerNotificationCarEventHandler("Twitter"))
+                .then(new PrintCarEventHandler());
+
+        // Start the Disruptor, starts all threads running
+        // Get the ring buffer from the Disruptor to be used for publishing.
+        RingBuffer<CarEvent> ringBuffer = disruptor.start();
+        sendCarsToFactory(ringBuffer);
+        //Thread.sleep(Integer.MAX_VALUE);
+        System.out.println("yo");
+    }
+
 
 
     @Test
@@ -106,15 +125,20 @@ public class DisruptorTests {
 
     }
 
-    */
 
-    private void doWork(RingBuffer<CarEvent> ringBuffer) {
-        for (long l = 0; l < 10; l++) {
+    private void sendCarsToFactory(RingBuffer<CarEvent> ringBuffer) {
+        for (long l = 0; l < 10000; l++) {
+            // 1 - get next car sequence (sequence is internal ringbuffer counter)
             long seq = ringBuffer.next();
-            CarEvent carEvent = ringBuffer.get(seq);
-            carEvent.set(new Car());
-            ringBuffer.publish(seq);
 
+            //2 - get CarEvent object based on it sequence.
+            CarEvent carEvent = ringBuffer.get(seq);
+
+            //3 - set the payload (Car) in the CarEvent.
+            carEvent.set(new Car());
+
+            //4 - publish the event using it sequence.
+            ringBuffer.publish(seq);
         }
     }
 }
