@@ -8,6 +8,7 @@ package com.mcba.disruptor;
 public class Car {
     private COLOR color = COLOR.WHITE;
     private POWER power = POWER.COLD_FUSION;
+    private int wheels = 0;
     private String transportMethod = "";
     private String customerNorificationMethod = "";
 
@@ -43,11 +44,20 @@ public class Car {
         this.customerNorificationMethod = customerNorificationMethod;
     }
 
+    public int getWheels() {
+        return wheels;
+    }
+
+    public void setWheels(int wheels) {
+        this.wheels = wheels;
+    }
+
     @Override
     public String toString() {
         return "Car{" +
                 "color=" + color +
                 ", power=" + power +
+                ", wheels=" + wheels +
                 ", transportMethod='" + transportMethod + '\'' +
                 ", customerNorificationMethod='" + customerNorificationMethod + '\'' +
                 '}';

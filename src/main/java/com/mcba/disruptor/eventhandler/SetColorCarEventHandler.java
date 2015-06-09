@@ -17,9 +17,7 @@ public class SetColorCarEventHandler implements EventHandler<CarEvent> {
 
         random.ints(0, Car.COLOR.values().length - 1)
                 .limit(1)
-                .forEach(i ->
-                                event.get().setColor(Car.COLOR.values()[i])
-                );
+                .forEach(i -> event.get().setColor(Car.COLOR.values()[i]));
 
     }
 }

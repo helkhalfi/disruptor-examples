@@ -17,9 +17,7 @@ public class SetPowerCarEventHandler implements EventHandler<CarEvent> {
 
         random.ints(0, Car.POWER.values().length - 1)
                 .limit(1)
-                .forEach(i ->
-                                event.get().setPower(Car.POWER.values()[i])
-                );
+                .forEach(i -> event.get().setPower(Car.POWER.values()[i]));
 
     }
 }
