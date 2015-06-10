@@ -93,7 +93,7 @@ public class DisruptorTests {
     @Test
     public void dispatchEachCarByOnlyOneWarAtOnce() throws Exception {
 
-        // Create a WorkerPool to dispatch onnect the handlers
+        // Create a WorkerPool to dispatch car delivery
         final WorkerPool<CarEvent> carDeliveryWorkerPool =
                 new WorkerPool(CarEvent::new,
                         new IgnoreExceptionHandler(),
