@@ -1,4 +1,4 @@
 disruptor
 =========
 
-Examples of using LMAX Disruptor in Java program
+Examples of using LMAX Disruptor in Java
